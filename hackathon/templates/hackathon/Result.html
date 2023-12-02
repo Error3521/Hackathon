@@ -1,29 +1,112 @@
-<!-- Ваш файл Result.html -->
+{% load static %}
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Апейрон</title>
 
-    <style>
-        .hidden {
-            display: none;
-        }
+    <link href="{% static 'hackathon/css/style.css' %}" rel="stylesheet">
 
-    </style>
 </head>
 <body>
 
-<form enctype="multipart/form-data" method="post">
-    {% csrf_token %}
-    <input type="file" name="{{ form.file.name }}" id="{{ form.file.id_for_label }}" style="display: none;" onchange="displayFileName(this)">
-    <button type="button" onclick="document.getElementById('{{ form.file.id_for_label }}').click();">Выбрать файл</button>
-    <span id="fileNameDisplay" style="display: none;"></span>
-    <button type="submit">Upload</button>
-</form>
+<header class="header">
+    <h1 class="headerContent">
+        Апейрон team
+    </h1>
+</header>
+
+<main class="main">
+    <header class="mainHeader">
+        <form class="mainHeaderContent" enctype="multipart/form-data" method="post">
+            {% csrf_token %}
+            <input id="{{ form.file.id_for_label }}" name="{{ form.file.name }}" onchange="displayFileName(this)" style="display: none;" type="file">
+
+            <button class="button" onclick="document.getElementById('{{ form.file.id_for_label }}').click();" type="button">Выбрать файл</button>
+            <span id="fileNameDisplay"></span>
+            <button class="button" type="submit">Upload</button>
+        </form>
+    </header>
+
+    <div class="mainContent">
+        <div class="contentBlock">
+            <table class="hidden" id="resultTable">
+                <thead>
+                <tr>
+                    <th>Вопрос</th>
+                    <th>Result</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for question in questions %}
+                <tr>
+                    <td>{{ question.question }}</td>
+                    <td>{{ question.result }}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+
+            <!-- Отображение среднего результата -->
+            <p class="hidden" id="averageResult">Average Result: {{ avg_result }}</p>
+
+            <!-- Добавление кнопки Delete -->
+            <form action="{% url 'delete_data' %}" class="hidden" id="deleteDataForm" method="post">
+                {% csrf_token %}
+                <button class="button" onclick="deleteData()" type="button">Delete</button>
+            </form>
+            <script>
+
+                function deleteData() {
+            fetch("{% url 'delete_data' %}", {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': "{{ csrf_token }}"
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Удаляем все строки из таблицы
+                const table = document.getElementById('resultTable');
+                while (table.rows.length > 1) {
+                    table.deleteRow(1);
+                }
+
+                // Обновление среднего арифметического
+                document.getElementById('averageResult').innerText = 'Average Result: ';
+
+                // Скрываем таблицу и среднее арифметическое
+                table.classList.add('hidden');
+                document.getElementById('averageResult').classList.add('hidden');
+                document.getElementById('deleteDataForm').classList.add('hidden');
+
+                // Скрываем также fileNameDisplay
+                document.getElementById('fileNameDisplay').style.display = 'none';
+
+                alert(data.message);
+            });
+        }
+            </script>
+
+            <!-- Отправка запроса на генерацию результата -->
+            <form action="{% url 'generate_result' %}" id="generateResultForm" method="post">
+                {% csrf_token %}
+                <button class="button" onclick="generateResult()" type="button">Generate Result</button>
+            </form>
+        </div>
+
+    </div>
+    <!-- Отображение только вопроса и результата -->
+
+</main>
+
+<footer class="footer">
+    <h3 class="footerContent">Апейрон team все права защищены и все такое</h3>
+</footer>
 
 <script>
-    function displayFileName(input) {
+        function displayFileName(input) {
         const fileNameDisplay = document.getElementById('fileNameDisplay');
         const label = document.getElementById('fileLabel');
 
@@ -36,77 +119,12 @@
             label.style.display = 'inline';
         }
     }
-</script>
 
 
 
-<!-- Отображение только вопроса и результата -->
-<table class="hidden" id="resultTable">
-    <thead>
-    <tr>
-        <th>Вопрос</th>
-        <th>Result</th>
-    </tr>
-    </thead>
-    <tbody>
-    {% for question in questions %}
-    <tr>
-        <td>{{ question.question }}</td>
-        <td>{{ question.result }}</td>
-    </tr>
-    {% endfor %}
-    </tbody>
-</table>
 
-<!-- Отображение среднего результата -->
-<p class="hidden" id="averageResult">Average Result: {{ avg_result }}</p>
 
-<!-- Добавление кнопки Delete -->
-<form action="{% url 'delete_data' %}" class="hidden" id="deleteDataForm" method="post">
-    {% csrf_token %}
-    <button onclick="deleteData()" type="button">Delete</button>
-</form>
-
-<!-- Отправляем запрос на сервер для удаления данных -->
-<script>
-    function deleteData() {
-        fetch("{% url 'delete_data' %}", {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': "{{ csrf_token }}"
-            },
-        })
-        .then(response => response.json())
-        .then(data => {
-            // Удаляем все строки из таблицы
-            const table = document.getElementById('resultTable');
-            while (table.rows.length > 1) {
-                table.deleteRow(1);
-            }
-
-            // Обновление среднего арифметического
-            document.getElementById('averageResult').innerText = 'Average Result: ';
-
-            // Показываем таблицу и среднее арифметическое
-            table.classList.add('hidden');
-            document.getElementById('averageResult').classList.add('hidden');
-            document.getElementById('deleteDataForm').classList.add('hidden');
-
-            alert(data.message);
-        });
-    }
-
-</script>
-
-<!-- Отправка запроса на генерацию результата -->
-<form action="{% url 'generate_result' %}" id="generateResultForm" method="post">
-    {% csrf_token %}
-    <button onclick="generateResult()" type="button">Generate Result</button>
-</form>
-
-<script>
-    function generateResult() {
+        function generateResult() {
         // Отправляем запрос на сервер для генерации результата
         fetch("{% url 'generate_result' %}", {
             method: 'POST',
@@ -134,7 +152,10 @@
         });
     }
 
+
+
 </script>
+
 
 </body>
 </html>
