@@ -11,7 +11,7 @@
 
 <header class="header">
     <h1 class="headerContent">
-        Апейрон team
+        Апейрон
     </h1>
 </header>
 
@@ -23,7 +23,7 @@
 
             <button class="button" onclick="document.getElementById('{{ form.file.id_for_label }}').click();" type="button">Выбрать файл</button>
             <span id="fileNameDisplay"></span>
-            <button class="button" type="submit">Upload</button>
+            <button class="button" type="submit">Внести данные в систему</button>
         </form>
     </header>
 
@@ -32,8 +32,8 @@
             <table class="hidden tableResult" id="resultTable">
                 <thead>
                 <tr>
-                    <th><h2>Вопрос</h2></th>
-                    <th><h2>Result</h2></th>
+                    <th><h2>Вопросы</h2></th>
+                    <th><h2>Результаты</h2></th>
                 </tr>
                 </thead>
                 <tbody class="tableResult">
@@ -47,18 +47,18 @@
             </table>
 
             <!-- Отображение среднего результата -->
-            <h2 class="hidden" id="averageResult">Average Result: {{ avg_result }}</h2>
+            <h2 class="hidden" id="averageResult">Средний результат: {{ avg_result }}</h2>
 
         <div class="buttonBlock">
             <!-- Добавление кнопки Delete -->
             <form action="{% url 'delete_data' %}" class="hidden" id="deleteDataForm" method="post">
                 {% csrf_token %}
-                <button class="button" onclick="deleteData()" type="button">Delete</button>
+                <button class="button" onclick="deleteData()" type="button">Удалить</button>
             </form>
             <!-- Отправка запроса на генерацию результата -->
             <form action="{% url 'generate_result' %}" id="generateResultForm" method="post">
                 {% csrf_token %}
-                <button class="button" onclick="generateResult()" type="button">Generate Result</button>
+                <button class="button" onclick="generateResult()" type="button">Вывести результаты тестирования</button>
             </form>
         </div>
 
@@ -106,7 +106,7 @@
 </main>
 
 <footer class="footer">
-    <h3 class="footerContent">Апейрон team все права защищены и все такое</h3>
+    <h3 class="footerContent">Апейрон все права защищены</h3>
 </footer>
 
 <script>
