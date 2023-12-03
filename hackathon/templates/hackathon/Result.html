@@ -30,16 +30,16 @@
 
     <div class="mainContent">
         <div class="contentBlock">
-            <table class="hidden" id="resultTable">
+            <table class="hidden tableResult" id="resultTable">
                 <thead>
                 <tr>
-                    <th>Вопрос</th>
-                    <th>Result</th>
+                    <th><h2>Вопрос</h2></th>
+                    <th><h2>Result</h2></th>
                 </tr>
                 </thead>
                 <tbody>
                 {% for question in questions %}
-                <tr>
+                <tr class="itemTableResult">
                     <td>{{ question.question }}</td>
                     <td>{{ question.result }}</td>
                 </tr>
@@ -48,13 +48,22 @@
             </table>
 
             <!-- Отображение среднего результата -->
-            <p class="hidden" id="averageResult">Average Result: {{ avg_result }}</p>
+            <h2 class="hidden" id="averageResult">Average Result: {{ avg_result }}</h2>
 
+        <div class="buttonBlock">
             <!-- Добавление кнопки Delete -->
             <form action="{% url 'delete_data' %}" class="hidden" id="deleteDataForm" method="post">
                 {% csrf_token %}
                 <button class="button" onclick="deleteData()" type="button">Delete</button>
             </form>
+            <!-- Отправка запроса на генерацию результата -->
+            <form action="{% url 'generate_result' %}" id="generateResultForm" method="post">
+                {% csrf_token %}
+                <button class="button" onclick="generateResult()" type="button">Generate Result</button>
+            </form>
+        </div>
+
+
             <script>
 
                 function deleteData() {
@@ -89,11 +98,7 @@
         }
             </script>
 
-            <!-- Отправка запроса на генерацию результата -->
-            <form action="{% url 'generate_result' %}" id="generateResultForm" method="post">
-                {% csrf_token %}
-                <button class="button" onclick="generateResult()" type="button">Generate Result</button>
-            </form>
+
         </div>
 
     </div>
@@ -119,10 +124,6 @@
             label.style.display = 'inline';
         }
     }
-
-
-
-
 
         function generateResult() {
         // Отправляем запрос на сервер для генерации результата
@@ -151,9 +152,6 @@
             document.getElementById('deleteDataForm').classList.remove('hidden');
         });
     }
-
-
-
 </script>
 
 

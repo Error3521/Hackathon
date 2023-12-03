@@ -2,15 +2,14 @@ body {
     margin: 0;
     padding: 0;
     background-color: #F0F5F9;
-
+    font-family: Bahnschrift, serif;
 }
 
 .header {
-    height: 60px;
+    height: 100px;
     width: 100%;
     background-color: #5895c7;
     display: flex;
-    margin-bottom: 20px;
     font-family: Bahnschrift, serif;
 }
 
@@ -19,15 +18,31 @@ body {
 }
 
 .main {
-
+    min-height: calc(100vh - 200px);
 }
 
 .hidden {
-display: none;
+    display: none;
+}
+
+.tableResult {
+    border: 2px black solid;
+    border-radius: 20px;
+}
+
+.itemTableResult {
+    height: 35px;
+}
+
+.buttonBlock {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+    margin-bottom: 40px;
 }
 
 .file-upload-button:hover {
-background-color: #45a049;
+    background-color: #45a049;
 }
 
 .mainHeader {
@@ -41,7 +56,6 @@ background-color: #45a049;
 
 .mainContent {
     display: flex;
-
 }
 
 .contentBlock {
@@ -63,10 +77,9 @@ background-color: #45a049;
 }
 
 .footer {
-    height: 60px;
+    height: 100px;
     width: 100%;
     background-color: #5895c7;
-    margin-top: 100px;
     display: flex;
     font-family: Bahnschrift, serif;
 }
