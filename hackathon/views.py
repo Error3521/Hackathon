@@ -8,7 +8,6 @@ from django.shortcuts import render
 from .forms import UploadFileForm
 from .models import Question
 
-
 def home(request):
     if request.method == 'POST':
         form = UploadFileForm(request.POST, request.FILES)
@@ -44,28 +43,24 @@ def home(request):
     return render(request, 'hackathon/Result.html', context)
 
 
-def generate_result(request):
-    questions = Question.objects.all()
+def generate_ai_answer(question, answers):
+    # Сгенерируем случайное число от 1 до 10 в качестве оценки
+    generated_evaluation = str(random.randint(1, 10))
 
-    result_data = [{'question': question.question, 'result': question.result} for question in questions]
+    # Создаем новую запись данных для результата
+    question_data = {
+        'id': None,  # Вы можете заменить None на фактический идентификатор, если он у вас есть
+        'question': question,
+        'answers': answers,
+        'evaluation': generated_evaluation
+    }
 
-    avg_result = questions.aggregate(Avg('result'))['result__avg']
-
-    for i, question in enumerate(questions):
-        question.result = str(random.randint(1, 10))
-        question.save()
-
+    # Сохраняем результат в JSON-файл
     with open('result.json', 'a') as file:
-        for data in result_data:
-            json.dump(data, file)
-            file.write('\n')
-
-    with open('result.json', 'a') as file:
-        json.dump({'average_result': avg_result}, file)
+        json.dump(question_data, file)
         file.write('\n')
 
-    return JsonResponse(result_data, safe=False)
-
+    return generated_evaluation
 
 def delete_data(request):
     Question.objects.all().delete()
