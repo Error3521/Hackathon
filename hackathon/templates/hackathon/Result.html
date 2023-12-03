@@ -58,43 +58,46 @@
             <!-- Отправка запроса на генерацию результата -->
             <form action="{% url 'generate_result' %}" id="generateResultForm" method="post">
                 {% csrf_token %}
-                <button class="button" onclick="generateResult()" type="button">Вывести результаты тестирования</button>
+                <button class="button" id="generateResultButton" onclick="generateResult()" type="button">Вывести результаты тестирования</button>
             </form>
         </div>
 
 
             <script>
-
-                function deleteData() {
-            fetch("{% url 'delete_data' %}", {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': "{{ csrf_token }}"
-                },
-            })
-            .then(response => response.json())
-            .then(data => {
-                // Удаляем все строки из таблицы
-                const table = document.getElementById('resultTable');
-                while (table.rows.length > 1) {
-                    table.deleteRow(1);
-                }
-
-                // Обновление среднего арифметического
-                document.getElementById('averageResult').innerText = 'Average Result: ';
-
-                // Скрываем таблицу и среднее арифметическое
-                table.classList.add('hidden');
-                document.getElementById('averageResult').classList.add('hidden');
-                document.getElementById('deleteDataForm').classList.add('hidden');
-
-                // Скрываем также fileNameDisplay
-                document.getElementById('fileNameDisplay').style.display = 'none';
-
-                alert(data.message);
-            });
+function deleteData() {
+    fetch("{% url 'delete_data' %}", {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': "{{ csrf_token }}"
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Удаляем все строки из таблицы
+        const table = document.getElementById('resultTable');
+        while (table.rows.length > 1) {
+            table.deleteRow(1);
         }
+
+        // Обновление среднего арифметического
+        document.getElementById('averageResult').innerText = 'Average Result: ';
+
+        // Скрываем таблицу и среднее арифметическое
+        table.classList.add('hidden');
+        document.getElementById('averageResult').classList.add('hidden');
+        document.getElementById('deleteDataForm').classList.add('hidden');
+
+        // Скрываем также fileNameDisplay
+        document.getElementById('fileNameDisplay').style.display = 'none';
+
+        // Проверяем, должна ли кнопка "Вывести результаты тестирования" быть активной
+        checkGenerateResultButton();
+
+        alert(data.message);
+    });
+}
+
             </script>
 
 
@@ -110,47 +113,59 @@
 </footer>
 
 <script>
-        function displayFileName(input) {
-        const fileNameDisplay = document.getElementById('fileNameDisplay');
-        const label = document.getElementById('fileLabel');
-
-        if (input.files.length > 0) {
-            fileNameDisplay.textContent = input.files[0].name;
-            fileNameDisplay.style.display = 'inline';
-            label.style.display = 'none';
-        } else {
-            fileNameDisplay.style.display = 'none';
-            label.style.display = 'inline';
-        }
-    }
-
         function generateResult() {
-        // Отправляем запрос на сервер для генерации результата
-        fetch("{% url 'generate_result' %}", {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': "{{ csrf_token }}"
-            },
-        })
-        .then(response => response.json())
-        .then(data => {
-            // Создаем и автоматически загружаем файл
-            const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'result.json';
-            document.body.appendChild(a);
-            a.click();
-            window.URL.revokeObjectURL(url);
-
-            // Показываем таблицу и среднее арифметическое после загрузки файла
-            document.getElementById('resultTable').classList.remove('hidden');
-            document.getElementById('averageResult').classList.remove('hidden');
-            document.getElementById('deleteDataForm').classList.remove('hidden');
-        });
+    // Проверяем, есть ли строки в таблице
+    const table = document.getElementById('resultTable');
+    if (table.rows.length <= 1) {
+        // Если таблица пуста, ничего не делаем
+        return;
     }
+
+    // Отправляем запрос на сервер для генерации результата
+    fetch("{% url 'generate_result' %}", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': "{{ csrf_token }}"
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Создаем и автоматически загружаем файл
+        const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'result.json';
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+
+        // Показываем таблицу и среднее арифметическое после загрузки файла
+        document.getElementById('resultTable').classList.remove('hidden');
+        document.getElementById('averageResult').classList.remove('hidden');
+        document.getElementById('deleteDataForm').classList.remove('hidden');
+    });
+}
+
+// Вызываем функцию для проверки, должна ли кнопка быть активной
+checkGenerateResultButton();
+
+function checkGenerateResultButton() {
+    const table = document.getElementById('resultTable');
+    const generateResultButton = document.getElementById('generateResultButton');
+    // Если таблица пуста, отключаем или скрываем кнопку
+    if (table.rows.length <= 1) {
+        generateResultButton.disabled = true;
+        // или
+        // generateResultButton.style.display = 'none';
+    } else {
+        generateResultButton.disabled = false;
+        // или
+        // generateResultButton.style.display = 'block';
+    }
+}
+
 </script>
 
 
