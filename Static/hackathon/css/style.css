@@ -27,7 +27,13 @@ body {
 
 .tableResult {
     border: 2px black solid;
+    padding: 20px;
     border-radius: 20px;
+}
+
+.tableCell {
+    margin-left: 30px;
+    font-size: 16px;
 }
 
 .itemTableResult {
@@ -67,13 +73,15 @@ body {
     width: max-content;
     border-radius: 10px;
     color: black;
-    background-color: #5895c7;
-    border: 0;
+    padding-inline: 20px;
+    background-color: #F0F5F9;
+    border: 2px #5895c7 solid;
     font-family: Bahnschrift, serif;
+    margin-left: 40px;
 }
 
 .button:hover {
-    background-color: #0199b6;
+    background-color: #5895c7;
 }
 
 .footer {

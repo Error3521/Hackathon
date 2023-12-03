@@ -36,11 +36,11 @@
                     <th><h2>Result</h2></th>
                 </tr>
                 </thead>
-                <tbody>
+                <tbody class="tableResult">
                 {% for question in questions %}
                 <tr class="itemTableResult">
                     <td>{{ question.question }}</td>
-                    <td>{{ question.result }}</td>
+                    <td><h4 class="tableCell">{{ question.result }}</h4></td>
                 </tr>
                 {% endfor %}
                 </tbody>
