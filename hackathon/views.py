@@ -43,24 +43,38 @@ def home(request):
     return render(request, 'hackathon/Result.html', context)
 
 
-def generate_ai_answer(question, answers):
-    # Сгенерируем случайное число от 1 до 10 в качестве оценки
-    generated_evaluation = str(random.randint(1, 10))
+def generate_result(request):
+    questions = Question.objects.all()
 
-    # Создаем новую запись данных для результата
-    question_data = {
-        'id': None,  # Вы можете заменить None на фактический идентификатор, если он у вас есть
-        'question': question,
-        'answers': answers,
-        'evaluation': generated_evaluation
-    }
+    result_data = []
 
-    # Сохраняем результат в JSON-файл
+    for question in questions:
+        # Create a new dictionary for each question with the existing structure
+        question_data = {
+            'id': question.id,
+            'question': question.question,
+            'answers': question.answers,
+            'evaluation': question.result  # Add the 'evaluation' key
+        }
+
+        result_data.append(question_data)
+
+    avg_result = questions.aggregate(Avg('result'))['result__avg']
+
+    for i, question in enumerate(questions):
+        question.result = str(random.randint(1, 10))
+        question.save()
+
     with open('result.json', 'a') as file:
-        json.dump(question_data, file)
+        for data in result_data:
+            json.dump(data, file)
+            file.write('\n')
+
+    with open('result.json', 'a') as file:
+        json.dump({'average_result': avg_result}, file)
         file.write('\n')
 
-    return generated_evaluation
+    return JsonResponse(result_data, safe=False)
 
 def delete_data(request):
     Question.objects.all().delete()
